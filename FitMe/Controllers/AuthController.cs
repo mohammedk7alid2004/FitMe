@@ -1,17 +1,24 @@
 ﻿
 using FitMe.Contracts.Email;
 using FitMe.Extensions;
+using Google.Apis.Auth;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FitMe.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class AuthController(IAuthService authService, ILogger<AuthController> logger,IEmailSender emailSender) : ControllerBase
+public class AuthController(
+    IAuthService authService,
+    ILogger<AuthController> logger,
+    IEmailSender emailSender,
+    IGoogleAuthService authService1) : ControllerBase
 {
     private readonly IAuthService _authService = authService;
     private readonly ILogger<AuthController> _logger = logger;
     private readonly IEmailSender _emailSender = emailSender;
+    private readonly IGoogleAuthService _authService1 = authService1;
 
     [HttpPost("")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
@@ -80,4 +87,16 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
 
         return result.IsSuccess ? Ok() : result.ToProblem();
     }
+    [HttpPost("google")]
+    public async Task<IActionResult> GoogleLogin([FromBody] GoogleAuthRequest request)
+    {
+        _logger.LogInformation("Google login attempt with token: {Token}", request.IdToken);
+
+        var result = await _authService1.AuthenticateAsync(request.IdToken);
+
+        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+    }
+
+
+
 }
