@@ -63,6 +63,7 @@ builder.Services.AddCors(options =>
                .AllowAnyHeader();
     });
 });
+builder.Services.AddScoped<IBrandService, BrandService>();
 
 var app = builder.Build();
 

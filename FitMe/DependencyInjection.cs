@@ -43,6 +43,7 @@ public static class DependencyInjection
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService , UserService>();
        // services.AddScoped<IEmailSender, EmailSender>();
+       services.AddScoped<IBrandService, BrandService>();
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
         services.AddHttpContextAccessor();
