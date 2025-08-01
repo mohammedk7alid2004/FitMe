@@ -1,6 +1,6 @@
 ﻿namespace FitMe.Contracts.Category;
 
-public record BrandRequest
+public record CategoryRequest
 (
     string Name
 );

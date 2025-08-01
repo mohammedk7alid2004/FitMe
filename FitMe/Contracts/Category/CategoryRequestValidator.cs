@@ -1,8 +1,8 @@
 ﻿namespace FitMe.Contracts.Category;
 
-public class BrandRequestValidator:AbstractValidator<BrandRequest>
+public class CategoryRequestValidator : AbstractValidator<CategoryRequest>
 {
-    public BrandRequestValidator()
+    public CategoryRequestValidator()
     {
         RuleFor(x => x.Name)
             .NotEmpty()

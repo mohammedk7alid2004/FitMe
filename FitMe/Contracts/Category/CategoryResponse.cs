@@ -1,7 +1,7 @@
 ﻿namespace FitMe.Contracts.Category;
 
-public record BrandResponse(
-    int Id,
+public record CategoryResponse(
+    int CategoryId,
  string Name   
  );
 

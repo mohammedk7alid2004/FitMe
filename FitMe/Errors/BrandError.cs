@@ -10,6 +10,6 @@ public class BrandError
     public static readonly Error BrandNotFound = new Error(
        "Brand.BrandNotFound",
        "A brand is not found",
-       StatusCodes.Status409Conflict
+       StatusCodes.Status404NotFound
    );
 }
