@@ -1,7 +1,7 @@
 ﻿namespace FitMe.Contracts.Category;
 
 public record CategoryResponse(
-    int CategoryId,
+    int Id,
  string Name   
  );
 

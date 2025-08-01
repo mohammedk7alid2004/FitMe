@@ -26,7 +26,7 @@ public class CategoryService(ApplicationDbContext context) : ICategoryService
     }
     public async Task<Result<CategoryResponse>> GetAsync(int id, CancellationToken cancellationToken = default)
     {
-       var category= await _context.Categories.SingleOrDefaultAsync(x=>x.CategoryId==id, cancellationToken);
+       var category= await _context.Categories.SingleOrDefaultAsync(x=>x.Id==id, cancellationToken);
         if (category is null)
             return Result.Failure<CategoryResponse>(CategoryError.CategoryNotFound);
         var response = category.Adapt<CategoryResponse>();
@@ -35,11 +35,11 @@ public class CategoryService(ApplicationDbContext context) : ICategoryService
 
     public async Task<Result<bool>> UpdateAsync(int Id, CategoryRequest request, CancellationToken cancellationToken = default)
     {
-        var OldCategory = await _context.Categories.SingleOrDefaultAsync(x => x.CategoryId == Id, cancellationToken);
+        var OldCategory = await _context.Categories.SingleOrDefaultAsync(x => x.Id == Id, cancellationToken);
         if (OldCategory is null)
             return Result.Failure<bool>(CategoryError.CategoryNotFound);
 
-        var CategoryExist = await _context.Categories.AnyAsync(x => x.Name == request.Name && x.CategoryId != Id, cancellationToken);
+        var CategoryExist = await _context.Categories.AnyAsync(x => x.Name == request.Name && x.Id != Id, cancellationToken);
         if (CategoryExist)
             return Result.Failure<bool>(CategoryError.DuplicatedCategoryName);
 
@@ -52,7 +52,7 @@ public class CategoryService(ApplicationDbContext context) : ICategoryService
 
     public async Task<Result<bool>> DeleteAsync(int Id, CancellationToken cancellationToken = default)
     {
-        var OldCategory = await _context.Categories.SingleOrDefaultAsync(x => x.CategoryId == Id, cancellationToken);
+        var OldCategory = await _context.Categories.SingleOrDefaultAsync(x => x.Id == Id, cancellationToken);
         if (OldCategory is null)
             return Result.Failure<bool>(CategoryError.CategoryNotFound);
         _context.Categories.Remove(OldCategory);

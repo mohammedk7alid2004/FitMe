@@ -34,7 +34,7 @@ public class BrandService (ApplicationDbContext context): IBrandService
     }
     public async Task<Result<BrandResponse>> GetByIdAsync(int id)
     {
-       var result = await _context.Brands.SingleOrDefaultAsync(z=>z.BrandId == id);
+       var result = await _context.Brands.SingleOrDefaultAsync(z=>z.Id == id);
         if (result is null)
             return Result.Failure<BrandResponse>(BrandError.BrandNotFound);
         var response = result.Adapt<BrandResponse>();

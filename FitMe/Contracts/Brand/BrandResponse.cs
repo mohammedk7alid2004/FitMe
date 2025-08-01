@@ -1,7 +1,7 @@
 ﻿namespace FitMe.Contracts.Brand;
 
 public record BrandResponse(
-     int BrandId ,
+     int Id ,
 string Name   
  );
 

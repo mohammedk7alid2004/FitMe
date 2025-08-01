@@ -4,6 +4,7 @@ using FitMe.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitMe.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250801114339_addproduct")]
+    partial class addproduct
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -111,7 +114,7 @@ namespace FitMe.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brands", (string)null);
+                    b.ToTable("Brands");
                 });
 
             modelBuilder.Entity("FitMe.Models.Category", b =>
@@ -128,7 +131,7 @@ namespace FitMe.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("FitMe.Models.OTP", b =>
@@ -155,7 +158,7 @@ namespace FitMe.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("OTP", (string)null);
+                    b.ToTable("OTP");
                 });
 
             modelBuilder.Entity("FitMe.Models.Product", b =>
@@ -193,11 +196,6 @@ namespace FitMe.Migrations
                     b.Property<decimal?>("Rating")
                         .HasColumnType("decimal(3,2)");
 
-                    b.Property<string>("Size")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
                     b.Property<int>("Stock")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
@@ -209,7 +207,7 @@ namespace FitMe.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -347,7 +345,7 @@ namespace FitMe.Migrations
 
             modelBuilder.Entity("FitMe.Models.ApplicationUser", b =>
                 {
-                    b.OwnsMany("FitMe.Models.ApplicationUser.RefreshTokens#FitMe.Models.RefreshToken", "RefreshTokens", b1 =>
+                    b.OwnsMany("FitMe.Models.RefreshToken", "RefreshTokens", b1 =>
                         {
                             b1.Property<string>("UserId")
                                 .HasColumnType("nvarchar(450)");

@@ -1,4 +1,5 @@
-﻿using FitMe.Extensions;
+﻿using FitMe.Contracts.Product;
+using FitMe.Extensions;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -10,7 +11,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<OTP>OTP { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Brand> Brands { get; set; }
-
+    public DbSet<Product> Products { get; set; }
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IHttpContextAccessor httpContextAccessor)
         : base(options)
     {
@@ -29,6 +30,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasForeignKey(o => o.UserId)
             .OnDelete(DeleteBehavior.Cascade);
         base.OnModelCreating(modelBuilder);
+      
+
     }
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
