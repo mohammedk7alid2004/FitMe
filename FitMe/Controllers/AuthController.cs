@@ -21,7 +21,7 @@ public class AuthController(
     private readonly IGoogleAuthService _authService1 = authService1;
 
     [HttpPost("")]
-    public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Login([FromForm] LoginRequest request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Logging with email: {email} and password: {password}", request.Email, request.Password);
 
@@ -33,7 +33,7 @@ public class AuthController(
     }
 
     [HttpPost("refresh")]
-    public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Refresh([FromForm] RefreshTokenRequest request, CancellationToken cancellationToken)
     {
         var authResult = await _authService.GetRefreshTokenAsync(request.Token, request.RefreshToken, cancellationToken);
 
@@ -41,7 +41,7 @@ public class AuthController(
     }
 
     [HttpPost("revoke-refresh-token")]
-    public async Task<IActionResult> RevokeRefreshToken([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> RevokeRefreshToken([FromForm] RefreshTokenRequest request, CancellationToken cancellationToken)
     {
         var result = await _authService.RevokeRefreshTokenAsync(request.Token, request.RefreshToken, cancellationToken);
 
@@ -57,7 +57,7 @@ public class AuthController(
     }
 
     [HttpPost("confirm-email")]
-    public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> ConfirmEmail([FromForm] ConfirmEmailRequest request, CancellationToken cancellationToken)
     {
         var result = await _authService.ConfirmEmailAsync(request);
 
@@ -65,7 +65,7 @@ public class AuthController(
     }
 
     [HttpPost("resend-confirmation-email")]
-    public async Task<IActionResult> ResendConfirmationEmail([FromBody] ResendConfirmationEmailRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> ResendConfirmationEmail([FromForm] ResendConfirmationEmailRequest request, CancellationToken cancellationToken)
     {
         var result = await _authService.ResendConfirmationEmailAsync(request);
 
@@ -81,14 +81,14 @@ public class AuthController(
     }
 
     [HttpPost("reset-password")]
-    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+    public async Task<IActionResult> ResetPassword([FromForm] ResetPasswordRequest request)
     {
         var result = await _authService.SendResetPasswordAsync(request);
 
         return result.IsSuccess ? Ok() : result.ToProblem();
     }
     [HttpPost("google")]
-    public async Task<IActionResult> GoogleLogin([FromBody] GoogleAuthRequest request)
+    public async Task<IActionResult> GoogleLogin([FromForm] GoogleAuthRequest request)
     {
         _logger.LogInformation("Google login attempt with token: {Token}", request.IdToken);
 
