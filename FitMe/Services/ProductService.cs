@@ -1,7 +1,7 @@
 ﻿using FitMe.Contracts.Common;
 using FitMe.Contracts.Product;
 using FitMe.Extensions;
-
+using System.Linq.Dynamic.Core;
 namespace FitMe.Services;
 
 public class ProductService(ApplicationDbContext context, IWebHostEnvironment env) : IProductService
@@ -11,7 +11,7 @@ public class ProductService(ApplicationDbContext context, IWebHostEnvironment en
 
     public async Task<Result> CreateAsync(ProductRequest request, CancellationToken cancellationToken = default)
     {
-        var ProductExists = await _context.Products.AnyAsync(p => p.Name == request.Name,cancellationToken);
+        var ProductExists = await _context.Products.AnyAsync(p => p.Name == request.Name, cancellationToken);
         if (ProductExists)
             return Result.Failure(ProductError.ProductAlreadyExists);
         var product = request.Adapt<Product>();
@@ -25,11 +25,24 @@ public class ProductService(ApplicationDbContext context, IWebHostEnvironment en
 
     public async Task<Result<PaginatedList<ProductResponse>>> GetAllAsync(RequestFilters filters, CancellationToken cancellationToken = default)
     {
-        var productExist= await _context.Products.AnyAsync(cancellationToken);
+        var productExist = await _context.Products.AnyAsync(cancellationToken);
         if (!productExist)
             return Result.Failure<PaginatedList<ProductResponse>>(ProductError.ProductNotFound);
-        var products =  _context.Products.ProjectToType<ProductResponse>().AsNoTracking();
-        var response = await PaginatedList<ProductResponse>.CreateAsync(products, filters.PageNumber, filters.PageSize, cancellationToken);
+        var products = _context.Products
+      .Where(p =>
+          (string.IsNullOrEmpty(filters.SearchValue) || p.Name.Contains(filters.SearchValue)) &&
+          (!filters.CategoryId.HasValue || p.CategoryId == filters.CategoryId.Value) &&
+          (!filters.BrandId.HasValue || p.BrandId == filters.BrandId.Value)
+      );
+
+        if (!string.IsNullOrEmpty(filters.SortColumn))
+        {
+            products = products.OrderBy($"{filters.SortColumn} {filters.SortDirection}");
+        }
+        var query= products
+            .ProjectToType<ProductResponse>()
+            .AsNoTracking();
+        var response = await PaginatedList<ProductResponse>.CreateAsync(query, filters.PageNumber, filters.PageSize, cancellationToken);
         return Result.Success(response);
     }
 

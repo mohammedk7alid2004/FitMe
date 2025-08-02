@@ -24,6 +24,7 @@
     </PackageReference>
     <PackageReference Include="MimeKit" Version="4.13.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.6.7" />
   </ItemGroup>
 
   <ItemGroup>
