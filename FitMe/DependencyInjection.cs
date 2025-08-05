@@ -1,12 +1,9 @@
-﻿using FluentValidation.AspNetCore;
+﻿
+using FluentValidation.AspNetCore;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+
 using System.Reflection;
-
-using FitMe.Settings;
-using Microsoft.Extensions.Options;
-using FitMe.Contracts.Email;
-
 
 namespace FitMe;
 
@@ -17,18 +14,18 @@ public static class DependencyInjection
     {
         services.AddControllers();
 
-
         services.AddCors(options =>
         {
             options.AddPolicy("AllowAll", builder =>
             {
-                builder.AllowAnyOrigin() 
-                       .AllowAnyMethod()  
-                       .AllowAnyHeader(); 
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
             });
         });
 
         services.AddAuthConfig(configuration);
+
         var connectionString = configuration.GetConnectionString("con") ??
             throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
@@ -40,25 +37,25 @@ public static class DependencyInjection
             .AddMapsterConfig()
             .AddFluentValidationConfig();
 
+        services.AddScoped<IJwtProvider, JwtProvider>();
         services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<IUserService , UserService>();
-       // services.AddScoped<IEmailSender, EmailSender>();
-       services.AddScoped<IBrandService, BrandService>();
+        services.AddScoped<IGoogleAuthService, GoogleAuthService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IBrandService, BrandService>();
+        services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<IProductService, ProductService>();
+
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
         services.AddHttpContextAccessor();
-        //  services.Configure<MailSettings>(configuration.GetSection(nameof(MailSettings)));
 
         return services;
-
     }
 
     private static IServiceCollection AddSwaggerServices(this IServiceCollection services)
     {
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
-
         return services;
     }
 
@@ -66,9 +63,7 @@ public static class DependencyInjection
     {
         var mappingConfig = TypeAdapterConfig.GlobalSettings;
         mappingConfig.Scan(Assembly.GetExecutingAssembly());
-
         services.AddSingleton<IMapper>(new Mapper(mappingConfig));
-
         return services;
     }
 
@@ -77,7 +72,6 @@ public static class DependencyInjection
         services
             .AddFluentValidationAutoValidation()
             .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-
         return services;
     }
 
@@ -85,13 +79,11 @@ public static class DependencyInjection
         IConfiguration configuration)
     {
         services.AddIdentity<ApplicationUser, IdentityRole>()
-          .AddEntityFrameworkStores<ApplicationDbContext>()
-          .AddDefaultTokenProviders();
-
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
 
         services.AddSingleton<IJwtProvider, JwtProvider>();
 
-        //services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
         services.AddOptions<JwtOptions>()
             .BindConfiguration(JwtOptions.SectionName)
             .ValidateDataAnnotations()
@@ -122,7 +114,6 @@ public static class DependencyInjection
         services.Configure<IdentityOptions>(options =>
         {
             options.Password.RequiredLength = 8;
-            //options.SignIn.RequireConfirmedEmail = true;
             options.User.RequireUniqueEmail = true;
         });
 

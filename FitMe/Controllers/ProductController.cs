@@ -1,6 +1,7 @@
 ﻿
 using FitMe.Contracts.Common;
 using FitMe.Contracts.Product;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace FitMe.Controllers;
 
@@ -16,6 +17,7 @@ public class ProductController(IProductService productService) : ControllerBase
        return result.IsSuccess? Created() : result.ToProblem();
     }
     [HttpGet("")]
+    //[OutputCache(Duration =60)]
     public async Task<IActionResult> GetAllAsync([FromQuery] RequestFilters filters, CancellationToken cancellationToken = default)
     {
         var result = await _productService.GetAllAsync(filters, cancellationToken);

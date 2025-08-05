@@ -178,16 +178,36 @@ public class AuthService(
         return Result.Failure(new Error(error.Code, error.Description, StatusCodes.Status400BadRequest));
     }
 
-    public async Task<Result> SendResetPasswordAsync(string email)
+   
+
+    public async Task<Result> ResendConfirmationEmailAsync(ResendConfirmationEmailRequest request)
     {
-        if (await _userManager.FindByEmailAsync(email) is not { } user)
+        if (await _userManager.FindByEmailAsync(request.Email) is not { } user)
             return Result.Success();
 
-        await SendPasswordResetOtpAsync(user);
+        if (user.EmailConfirmed)
+            return Result.Failure(UserErrors.DuplicatedConfirmation);
+
+        await SendOtpAsync(user);
 
         return Result.Success();
     }
-    public async Task<Result> SendResetPasswordAsync(ResetPasswordRequest request)
+
+    private static string GenerateRefreshToken()
+    {
+        return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+    }
+    public async Task<Result> SendResetOtpAsync(string email)
+    {
+        if (await _userManager.FindByEmailAsync(email) is not { } user)
+            return Result.Success();
+        if (!user.EmailConfirmed)
+            return Result.Failure(UserErrors.EmailNotConfirmed);
+
+        await SendPasswordResetOtpAsync(user);
+        return Result.Success();
+    }
+    public async Task<Result> ResetPasswordAsync(ResetPasswordRequest request)
     {
         var user = await _userManager.FindByEmailAsync(request.Email);
 
@@ -225,24 +245,24 @@ public class AuthService(
         return Result.Failure(new Error(error.Code, error.Description, StatusCodes.Status400BadRequest));
 
     }
-    public async Task<Result> ResendConfirmationEmailAsync(ResendConfirmationEmailRequest request)
+    public async Task<Result<bool>> VerifyResetOtpAsync(string email, string code)
     {
-        if (await _userManager.FindByEmailAsync(request.Email) is not { } user)
-            return Result.Success();
+        var user = await _userManager.FindByEmailAsync(email);
 
-        if (user.EmailConfirmed)
-            return Result.Failure(UserErrors.DuplicatedConfirmation);
+        if (user is null || !user.EmailConfirmed)
+            return Result.Failure<bool>(UserErrors.EmailNotConfirmed);
 
-        await SendOtpAsync(user);
+        var otpRecord = await _context.OTP
+            .Where(x => x.UserId == user.Id && x.Code == code)
+            .FirstOrDefaultAsync();
 
-        return Result.Success();
+        if (otpRecord == null || otpRecord.ExpiryTime < DateTime.UtcNow)
+        {
+            return Result.Failure<bool>(UserErrors.InvalidCode);
+        }
+
+        return Result.Success(true);
     }
-
-    private static string GenerateRefreshToken()
-    {
-        return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
-    }
-
     private async Task<Result> SendOtpAsync(ApplicationUser user)
     {
         var otpCode = new Random().Next(100000, 999999).ToString();
@@ -323,5 +343,10 @@ public class AuthService(
         return Result.Success();
     }
 
+
+
    
+
+
+
 }

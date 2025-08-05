@@ -1,9 +1,5 @@
 ﻿
 using FitMe.Contracts.Email;
-using FitMe.Extensions;
-using Google.Apis.Auth;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 
 namespace FitMe.Controllers;
 
@@ -75,15 +71,26 @@ public class AuthController(
     [HttpPost("forget-password")]
     public async Task<IActionResult> ForgetPassword([FromForm] ForgetPasswordRequest request)
     {
-        var result = await _authService.SendResetPasswordAsync(request.Email);
+        var result = await _authService.SendResetOtpAsync(request.Email);
 
         return result.IsSuccess ? Ok() : result.ToProblem();
     }
+    [HttpPost("verify-reset-otp")]
+    public async Task<IActionResult> VerifyResetOtp([FromForm] VerifyOtpRequest request)
+    {
+        var result = await _authService.VerifyResetOtpAsync(request.Email, request.Code);
+
+        if (result.IsFailure)
+            return BadRequest(result.Error);
+
+        return Ok("OTP is valid.");
+    }
+
 
     [HttpPost("reset-password")]
     public async Task<IActionResult> ResetPassword([FromForm] ResetPasswordRequest request)
     {
-        var result = await _authService.SendResetPasswordAsync(request);
+        var result = await _authService.ResetPasswordAsync(request);
 
         return result.IsSuccess ? Ok() : result.ToProblem();
     }
