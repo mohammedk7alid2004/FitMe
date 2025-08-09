@@ -26,7 +26,10 @@
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7240;http://localhost:5173",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+       "ASPNETCORE_ENVIRONMENT": "Development"
+        "MailSettings__AppPassword": "lepy xfet mswa lkdt"
+        //"ApiKey": "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"
+
       }
     },
     "IIS Express": {

@@ -1,4 +1,6 @@
 ﻿
+using FitMe.Contracts.Email;
+using FitMe.NewFolder;
 using FluentValidation.AspNetCore;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -44,6 +46,9 @@ public static class DependencyInjection
         services.AddScoped<IBrandService, BrandService>();
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IProductService, ProductService>();
+         services.AddScoped<EmailBodyBuilder>();
+        services.AddTransient<NewFolder.EmailSender11>();
+          services.AddScoped<EmailBodyBuilder>();
 
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();

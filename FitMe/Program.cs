@@ -44,6 +44,7 @@ app.UseStaticFiles(new StaticFileOptions
         Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads")),
     RequestPath = "/Uploads"
 });
+app.UseDeveloperExceptionPage(); // قبل أي middleware زي routing
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");

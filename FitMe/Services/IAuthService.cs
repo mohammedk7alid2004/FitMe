@@ -12,7 +12,7 @@ public interface IAuthService
     Task<Result> ConfirmEmailAsync(ConfirmEmailRequest request);
     Task<Result> ResendConfirmationEmailAsync(ResendConfirmationEmailRequest request);
     Task<Result> SendResetOtpAsync(string email);
-    Task<Result<bool>> VerifyResetOtpAsync(string email, string code);
+    Task<Result> VerifyResetOtpAsync(string email, string code);
     Task<Result> ResetPasswordAsync(ResetPasswordRequest request);
 }
 

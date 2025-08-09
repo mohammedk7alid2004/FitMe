@@ -4,7 +4,10 @@ using FitMe.Abstractions;
 public static class UserErrors
 {
     public static readonly Error InvalidCredentials = new("User.InvalidCredentials", "Invalid email or password", StatusCodes.Status401Unauthorized);
-
+    public static readonly Error EmailIsRequired =
+        new("User.EmailIsRequired", "Email is required", StatusCodes.Status400BadRequest);
+    public static readonly Error EmailNotFound =
+        new("User.EmailNotFound", "Email not found", StatusCodes.Status404NotFound);
     public static readonly Error InvalidJwtToken =
         new("User.InvalidJwtToken", "Invalid Jwt token", StatusCodes.Status401Unauthorized);
     public static readonly Error InvalidGoogleToken =

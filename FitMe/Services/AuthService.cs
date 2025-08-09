@@ -12,7 +12,8 @@ public class AuthService(
     IEmailSender emailSender,
     IHttpContextAccessor httpContextAccessor,
     IWebHostEnvironment env,
-    ApplicationDbContext context) : IAuthService
+    ApplicationDbContext context,
+    EmailBodyBuilder builder) : IAuthService
 {
     private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
@@ -22,6 +23,7 @@ public class AuthService(
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
     private readonly IWebHostEnvironment _env = env;
     private readonly ApplicationDbContext _context = context;
+    private readonly EmailBodyBuilder _builder = builder;
     private readonly int _otpExpiryMinutes = 5;
     private readonly int _refreshTokenExpiryDays = 14;
 
@@ -53,8 +55,12 @@ public class AuthService(
 
             return Result.Success(response);
         }
-
-        return Result.Failure<AuthResponse>(result.IsNotAllowed ? UserErrors.EmailNotConfirmed : UserErrors.InvalidCredentials);
+        if (!user.EmailConfirmed)
+        {
+            await SendOtpAsync(user); 
+            return Result.Failure<AuthResponse>(UserErrors.EmailNotConfirmed);
+        }
+        return Result.Failure<AuthResponse>(UserErrors.InvalidCredentials);
     }
 
     public async Task<Result<AuthResponse>> GetRefreshTokenAsync(string token, string refreshToken, CancellationToken cancellationToken = default)
@@ -133,12 +139,12 @@ public class AuthService(
             await user.UploadPhotoAsync(request.Photo, _env, _userManager);
 
             await SendOtpAsync(user);
-            
+
             return Result.Success(user.Id);
         }
 
         var error = result.Errors.First();
-        
+
         return Result.Failure(new Error(error.Code, error.Description, StatusCodes.Status400BadRequest));
     }
 
@@ -149,9 +155,9 @@ public class AuthService(
 
         if (user.EmailConfirmed)
             return Result.Failure(UserErrors.DuplicatedConfirmation);
-        var user1=await  _userManager.FindByEmailAsync(request.Email);
+        var user1 = await _userManager.FindByEmailAsync(request.Email);
         var otpRecord = await _context.OTP
-            .Where(x => x.UserId == user1!.Id  && x.Code == request.Code)
+            .Where(x => x.UserId == user1!.Id && x.Code == request.Code)
             .FirstOrDefaultAsync();
 
         if (otpRecord == null)
@@ -178,7 +184,7 @@ public class AuthService(
         return Result.Failure(new Error(error.Code, error.Description, StatusCodes.Status400BadRequest));
     }
 
-   
+
 
     public async Task<Result> ResendConfirmationEmailAsync(ResendConfirmationEmailRequest request)
     {
@@ -200,13 +206,15 @@ public class AuthService(
     public async Task<Result> SendResetOtpAsync(string email)
     {
         if (await _userManager.FindByEmailAsync(email) is not { } user)
-            return Result.Success();
+            return Result.Failure(UserErrors.EmailNotFound);
+
         if (!user.EmailConfirmed)
             return Result.Failure(UserErrors.EmailNotConfirmed);
 
         await SendPasswordResetOtpAsync(user);
         return Result.Success();
     }
+
     public async Task<Result> ResetPasswordAsync(ResetPasswordRequest request)
     {
         var user = await _userManager.FindByEmailAsync(request.Email);
@@ -245,24 +253,28 @@ public class AuthService(
         return Result.Failure(new Error(error.Code, error.Description, StatusCodes.Status400BadRequest));
 
     }
-    public async Task<Result<bool>> VerifyResetOtpAsync(string email, string code)
+    public async Task<Result> VerifyResetOtpAsync(string email, string code)
     {
-        var user = await _userManager.FindByEmailAsync(email);
+        if (string.IsNullOrWhiteSpace(email))
+            return Result.Failure(UserErrors.EmailIsRequired);
 
-        if (user is null || !user.EmailConfirmed)
-            return Result.Failure<bool>(UserErrors.EmailNotConfirmed);
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user is null)
+            return Result.Failure(UserErrors.EmailNotFound);
+
+        if (!user.EmailConfirmed)
+            return Result.Failure(UserErrors.EmailNotConfirmed);
 
         var otpRecord = await _context.OTP
-            .Where(x => x.UserId == user.Id && x.Code == code)
-            .FirstOrDefaultAsync();
+            .SingleOrDefaultAsync(x => x.UserId == user.Id && x.Code == code);
 
-        if (otpRecord == null || otpRecord.ExpiryTime < DateTime.UtcNow)
-        {
-            return Result.Failure<bool>(UserErrors.InvalidCode);
-        }
+        if (otpRecord is null || otpRecord.ExpiryTime < DateTime.UtcNow)
+            return Result.Failure(UserErrors.InvalidCode);
 
-        return Result.Success(true);
+        return Result.Success();
     }
+
+
     private async Task<Result> SendOtpAsync(ApplicationUser user)
     {
         var otpCode = new Random().Next(100000, 999999).ToString();
@@ -287,7 +299,7 @@ public class AuthService(
         _context.OTP.Add(otp);
         await _context.SaveChangesAsync();
 
-        var emailBody = EmailBodyBuilder.GenerateEmailBody("EmailConfirmation",
+        var emailBody = _builder.GenerateEmailBody("EmailConfirmation",
             templateModel: new Dictionary<string, string>
             {
                 { "{{name}}", user.FullName },
@@ -327,7 +339,7 @@ public class AuthService(
         _context.OTP.Add(otp);
         await _context.SaveChangesAsync();
 
-        var emailBody = EmailBodyBuilder.GenerateEmailBody("ForgetPassword",
+        var emailBody = _builder.GenerateEmailBody("ForgetPassword",
             templateModel: new Dictionary<string, string>
             {
                 { "{{name}}", user.FullName },
@@ -345,7 +357,7 @@ public class AuthService(
 
 
 
-   
+
 
 
 
