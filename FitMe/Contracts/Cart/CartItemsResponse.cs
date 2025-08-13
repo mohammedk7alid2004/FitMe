@@ -2,10 +2,10 @@
 
 public record CartItemsResponse
 (
-     int CartId,
     int ProductId,
+    string ProductName,
+    string? ProductImageUrl,
     int Quantity,
-    decimal Price,
-    
+    decimal Price  
 );
 

@@ -47,9 +47,10 @@ public static class DependencyInjection
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IProductService, ProductService>();
          services.AddScoped<EmailBodyBuilder>();
-        services.AddTransient<NewFolder.EmailSender11>();
+       // services.AddTransient<NewFolder.EmailSender11>();
           services.AddScoped<EmailBodyBuilder>();
-
+        services.AddScoped<ICartItemsServices , CartItemsServices>();
+        services.AddScoped<IPaymentServices, PaymentServices>();
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
         services.AddHttpContextAccessor();

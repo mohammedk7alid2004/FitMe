@@ -3,6 +3,7 @@ using FitMe.Contracts.Email;
 using FitMe.Settings;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpClient();  
 
 // Configure database and dependencies
 builder.Services.AddDependencies(builder.Configuration);
@@ -28,6 +30,7 @@ builder.Services.AddTransient<IEmailSender>(provider =>
         emailSettings.IsBodyHtml
     );
 });
+StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
 var app = builder.Build();
 
