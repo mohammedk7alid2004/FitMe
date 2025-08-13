@@ -26,7 +26,10 @@
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7240;http://localhost:5173",
       "environmentVariables": {
-       "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "Stripe__SecretKey": "sk_test_51RvMymHR9npIPjhVuDujAQXiUSJzUT7QY6xa8wh1FyRiEnDzsSsNALM8OFtGfTru5bIdr7tc3SbWXK1jazHY8cvx00RbvDW9eb",
+        "Stripe__PublishableKey": "pk_test_51RvMymHR9npIPjhV2mam6P0Lbc6lisvPwFR9UlDhraD3xfqGblRU6BgmLhXCmMNTLzYONgxxqbyHux26g7Ydj5uB00qvaVGMHW",
+        "PaymobSettings__ApiKey": "ZXlKaGJHY2lPaUpJVXpVeE1pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SmpiR0Z6Y3lJNklrMWxjbU5vWVc1MElpd2ljSEp2Wm1sc1pWOXdheUk2TVRBMk9ESTRNQ3dpYm1GdFpTSTZJbWx1YVhScFlXd2lmUS5tOTRpb3ljX0JhVU40Yk5mOHdFbnlpNEVrQnlLWktIQWhfb0NxSFJ4bVN4RjRNVUpVZ21PWUc0dDVXUnRRR0U0RmliNlJaWG42R1gta3IxSXE4Z21IZw=="
         //"MailSettings__AppPassword": "lepy xfet mswa lkdt"
         ////"ApiKey": "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"
 
