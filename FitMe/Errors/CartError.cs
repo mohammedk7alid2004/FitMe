@@ -16,5 +16,11 @@ public static class CartError
      "FailedToDeleteCartItem",
      "FailedToDeleteCartItem.",
      StatusCodes.Status400BadRequest
+
  );
+
+
+    public static readonly Error FailedCart =
+        new("User.Failed Cart", "Failed to get or create cart", StatusCodes.Status400BadRequest);
+
 }

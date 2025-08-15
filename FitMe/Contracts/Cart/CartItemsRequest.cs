@@ -1,11 +1,8 @@
 ﻿namespace FitMe.Contracts.Cart;
 
-public record CartItemsRequest
-(
-    int CartId ,
+public record CartItemsRequest(
     int ProductId,
-    int Quantity,
-    decimal Price,
-    decimal TotalPrice
+    int Quantity
 );
+
 

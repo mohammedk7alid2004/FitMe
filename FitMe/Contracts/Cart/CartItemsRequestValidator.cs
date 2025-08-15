@@ -5,6 +5,5 @@ public class CartItemsRequestValidator:AbstractValidator<CartItemsRequest>
     public CartItemsRequestValidator()
     {
             RuleFor(x=>x.Quantity).NotEmpty();
-         RuleFor(x=>x.Price).NotEmpty();
     }
 }

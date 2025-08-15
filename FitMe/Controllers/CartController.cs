@@ -25,7 +25,7 @@ public class CartController(ICartItemsServices cartItems) : ControllerBase
     public async Task<IActionResult> AddToCart([FromBody] CartItemsRequest cartItemsRequest)
     {
         var userId = User.GetUserId();
-        var result = await _cartItems.AddAsync(cartItemsRequest, userId);
+        var result = await _cartItems.AddAsync(cartItemsRequest, userId!);
         return result.IsSuccess ? Ok() : result.ToProblem();
     }
     [HttpGet("total-price")]

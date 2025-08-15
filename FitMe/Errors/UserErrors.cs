@@ -3,7 +3,8 @@ namespace FitMe.Errors;
 using FitMe.Abstractions;
 public static class UserErrors
 {
-    public static readonly Error InvalidCredentials = new("User.InvalidCredentials", "Invalid email or password", StatusCodes.Status401Unauthorized);
+    public static readonly Error InvalidCredentials =
+        new("User.InvalidCredentials", "Invalid email or password", StatusCodes.Status401Unauthorized);
     public static readonly Error EmailIsRequired =
         new("User.EmailIsRequired", "Email is required", StatusCodes.Status400BadRequest);
     public static readonly Error EmailNotFound =
@@ -26,6 +27,9 @@ public static class UserErrors
 
     public static readonly Error DuplicatedConfirmation =
         new("User.DuplicatedConfirmation", "Email already confirmed", StatusCodes.Status400BadRequest);
+
+    public static readonly Error UserIdNotnull =
+    new("User.InvalidCredentials", "User ID cannot be null or empty", StatusCodes.Status401Unauthorized);
 
 }
 

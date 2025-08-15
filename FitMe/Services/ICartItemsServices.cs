@@ -6,7 +6,6 @@ namespace FitMe.Services;
 
 public interface ICartItemsServices
 {
-    Task<Result> CreateCart(string userId, CancellationToken cancellationToken = default);
     Task<Result<IEnumerable<CartItemsResponse>>> GetAllAsync(string userId,CancellationToken cancellationToken=default);
     Task<Result>AddAsync(CartItemsRequest cartItemsRequest, string userId, CancellationToken cancellationToken = default);
     Task<Result<bool>> UpdateAsync(CartItemUpdate cartItemsRequest, string userId, CancellationToken cancellationToken = default);

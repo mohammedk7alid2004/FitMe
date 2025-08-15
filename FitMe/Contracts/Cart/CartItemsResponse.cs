@@ -6,6 +6,7 @@ public record CartItemsResponse
     string ProductName,
     string? ProductImageUrl,
     int Quantity,
-    decimal Price  
+    decimal Price  ,
+    decimal TotalPrice  
 );
 
